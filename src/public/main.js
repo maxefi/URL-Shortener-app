@@ -1,5 +1,5 @@
 const form = document.querySelector('.url-form');
-const result = document.querySelector('.result-selection');
+const result = document.querySelector('.result-section');
 const input = document.querySelector('.url-input');
 
 form.addEventListener('submit', event => {
