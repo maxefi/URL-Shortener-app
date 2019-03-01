@@ -2,25 +2,27 @@ const form = document.querySelector('.url-form');
 const result = document.querySelector('.result-section');
 const input = document.querySelector('.url-input');
 
-form.addEventListener('submit', event => {
+form.addEventListener('submit', async event => {
   event.preventDefault();
 
-  fetch('/new', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      url: input.value,
-    }),
-  }).then(response => {
+  try {
+    const response = await fetch('/new', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url: input.value,
+      }),
+    });
+
     if (!response.ok) {
       throw Error(response.statusText);
     }
 
-    return response.json();
-  }).then(data => {
+    const data = await response.json();
+
     while (result.hasChildNodes()) {
       result.removeChild(result.lastChild);
     }
@@ -32,5 +34,7 @@ form.addEventListener('submit', event => {
         </a>
       </div>
     `);
-  }).catch(console.error);
+  } catch (err) {
+    console.error(err);
+  }
 });
