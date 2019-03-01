@@ -39,6 +39,10 @@ const shortenURL = (db, url) => {
   );
 };
 
+const checkIfShortIdExists = (db, code) => {
+  return db.collection('shortenedURLs').findOne({ short_id: code });
+};
+
 app.get('/', (req, res) => {
   const htmlPath = path.join(__dirname, 'public', 'index.html');
   res.sendFile(htmlPath);
@@ -76,6 +80,21 @@ app.post('/new', (req, res) => {
           short_id: doc.short_id,
         });
       })
-      .catch(console.error)
+      .catch(console.error);
   });
+});
+
+app.get('/:short_id', (req, res) => {
+  const shortId = req.params.short_id;
+  const { db } = req.app.locals;
+
+  console.log({ shortId });
+
+  checkIfShortIdExists(db, shortId)
+    .then(doc => {
+      if (doc === null) return res.send('Uh oh. We could not find a link at that URL');
+
+      res.redirect(doc.original_url);
+    })
+    .catch(console.error);
 });
