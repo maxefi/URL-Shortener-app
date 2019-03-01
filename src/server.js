@@ -4,11 +4,23 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const dns = require('dns');
+const { MongoClient } = require('mongodb');
+
+const databaseUrl = process.env.DATABASE;
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+MongoClient
+  .connect(databaseUrl, { useNewUrlParser: true })
+  .then(client => {
+      app.locals.db = client.db('shortener');
+  })
+  .catch(() => console.error('Failed to connect to the database'));
 
 app.get('/', (req, res) => {
   const htmlPath = path.join(__dirname, 'public', 'index.html');
